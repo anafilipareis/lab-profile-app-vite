@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const cloudinary = require('cloudinary').v2;
 
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
@@ -162,6 +163,20 @@ router.get("/users", isAuthenticated, async (req, res, next) => {
   }
 });
 
+// route for handling file uploads with Cloudinary
+router.post('/upload', async (req, res, next) => {
+  try {
+    // Assuming req.file contains the uploaded file from a form
+    const result = await cloudinary.uploader.upload(req.file.path);
 
+    // `result.secure_url` contains the public URL of the uploaded image
+    const imageUrl = result.secure_url;
+
+    // Respond with the URL or any other relevant information
+    res.status(200).json({ imageUrl: imageUrl });
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;
